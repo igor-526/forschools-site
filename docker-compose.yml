@@ -1,0 +1,46 @@
+version: '3.9'
+
+networks:
+  site_network:
+    driver: bridge
+
+volumes:
+  site_pgdata:
+  site_media:
+
+services:
+  site_database:
+    image: postgres:latest
+    ports:
+      - "${PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DB}
+      POSTGRES_HOST: localhost
+    networks:
+      - site_network
+    volumes:
+      - site_pgdata:/var/lib/postgresql/data
+    restart: always
+
+  site_django:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DB_DB: ${DB_DB}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: site_database
+      PORT: 5432
+      PYTHONUNBUFFERED: 1
+    entrypoint: bash -c  "python manage.py collectstatic --noinput && python manage.py makemigrations && python manage.py migrate &&  gunicorn --bind 0.0.0.0:5000 forschools.wsgi:application";
+    depends_on:
+      - site_database
+    networks:
+      - site_network
+    volumes:
+      - site_media:/src/media
+    restart: always
