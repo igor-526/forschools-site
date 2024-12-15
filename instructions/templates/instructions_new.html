@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <form id="instructionsNewForm">
+        <div class="mb-3">
+            <label for="instructionsNewFormNameField" class="form-label">Наименование</label>
+            <input name="name" type="text" class="form-control" id="instructionsNewFormNameField">
+        </div>
+        <div class="mb-3">
+            <div class="form-text"></div>
+            <div class="invalid-feedback" id="instructionsNewFormNameError"></div>
+            <input name="role" value="listeners" type="checkbox" class="btn-check" id="instructionsNewFormInstructionCheckboxListeners" autocomplete="off">
+            <label class="btn btn-outline-primary mb-1" for="instructionsNewFormInstructionCheckboxListeners">Ученики</label>
+            <input name="role" value="teachers" type="checkbox" class="btn-check" id="instructionsNewFormInstructionCheckboxTeachers" autocomplete="off">
+            <label class="btn btn-outline-primary mb-1" for="instructionsNewFormInstructionCheckboxTeachers">Преподаватели</label>
+            <input name="role" value="curators" type="checkbox" class="btn-check" id="instructionsNewFormInstructionCheckboxCurators" autocomplete="off">
+            <label class="btn btn-outline-primary mb-1" for="instructionsNewFormInstructionCheckboxCurators">Кураторы</label>
+            <input name="role" value="methodists" type="checkbox" class="btn-check" id="instructionsNewFormInstructionCheckboxMethodists" autocomplete="off">
+            <label class="btn btn-outline-primary mb-1" for="instructionsNewFormInstructionCheckboxMethodists">Методисты</label>
+            <input name="role" value="administrators" type="checkbox" class="btn-check" id="instructionsNewFormInstructionCheckboxAdministrators" autocomplete="off">
+            <label class="btn btn-outline-primary mb-1" for="instructionsNewFormInstructionCheckboxAdministrators">Администраторы</label>
+        </div>
+        <div class="mb-3">
+            <label for="instructionsNewFormInstructionField" class="form-label">Инструкция</label>
+            <textarea name="instruction" class="form-control" id="instructionsNewFormInstructionField" rows="40"></textarea>
+            <div class="invalid-feedback" id="instructionsNewFormInstructionError"></div>
+        </div>
+    </form>
+    <button id="instructionsNewFormInstructionSaveButton" class="btn-primary btn mb-3">Сохранить</button>
+{% endblock %}
+{% block static_js %}
+    <script src="{% static 'instructions/js/instructions_api.js' %}"></script>
+    <script src="{% static 'instructions/js/instructions_new.js' %}"></script>
+{% endblock %}

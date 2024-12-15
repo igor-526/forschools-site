@@ -1,7 +1,6 @@
 venv/
 __pycache__/
 .idea/
-.env
-*/migrations/*
+prod.env
 media/*
-forschools/settings.py
+docker-compose.yml
