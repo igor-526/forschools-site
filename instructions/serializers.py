@@ -54,7 +54,7 @@ class InstructionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instruction
-        fields = ['id', 'name', 'files']
+        fields = ['id', 'name', 'instruction', 'files']
 
 
 class InstructionsAdminSerializer(serializers.ModelSerializer):
