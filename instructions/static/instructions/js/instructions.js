@@ -47,15 +47,24 @@ function instructionsRoleTabListeners(){
 }
 
 function instructionsShow(instructions){
+    function replaceFiles(files){
+        files.forEach(file => {
+            instructionsContent.innerHTML = instructionsContent.innerHTML.replace(`[file:${file.id}]`,
+                `<img src="${file.file}" alt="${file.alt}" class="mx-1" style="width: 18rem;">`)
+        })
+    }
+
     function getListener(insID, button){
         instructionsAPIGetItem(insID).then(request => {
             switch (request.status){
                 case 200:
+                    console.log(request.response)
                     instructionsQuestions.querySelectorAll(".nav-link").forEach(elem => {
                         elem.classList.remove("active")
                     })
                     button.classList.add("active")
-                    instructionsContent.innerHTML = request.response.instruction
+                    instructionsContent.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
+                    replaceFiles(request.response.files)
                     break
                 default:
                     break
@@ -82,7 +91,7 @@ function instructionsShow(instructions){
 }
 
 function instructionsGetQuestions(role="listeners"){
-    instructionsAPIGetAll(role).then(request => {
+    instructionsAPIGetAll([role]).then(request => {
         switch (request.status){
             case 200:
                 instructionsShow(request.response)
@@ -99,7 +108,6 @@ const instructionsTabTeachers = document.querySelector("#instructionsTabTeachers
 const instructionsTabCurators = document.querySelector("#instructionsTabCurators")
 const instructionsTabMethodists = document.querySelector("#instructionsTabMethodists")
 const instructionsTabAdministrators = document.querySelector("#instructionsTabAdministrators")
-const instructionsTabChange = document.querySelector("#instructionsTabChange")
 const instructionsQuestions = document.querySelector("#instructionsQuestions")
 const instructionsContent = document.querySelector("#instructionsContent")
 

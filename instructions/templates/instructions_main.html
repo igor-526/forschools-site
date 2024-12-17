@@ -17,9 +17,11 @@
         <li class="nav-item" role="presentation">
             <button id="instructionsTabAdministrators" class="nav-link" type="button" role="tab">Администраторам</button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button id="instructionsTabChange" class="nav-link" type="button" role="tab">Изменить</button>
-        </li>
+        {% if request.user.instructions_moderator %}
+            <li class="nav-item" role="presentation">
+                <a target="_blank" href="{% url 'instructions_management' %}"><button class="nav-link" type="button" role="tab">Изменить</button></a>
+            </li>
+        {% endif %}
     </ul>
     <div class="row">
         <div class="col-3">
@@ -27,10 +29,13 @@
                 <div id="instructionsQuestions" class="nav flex-column nav-pills me-3" role="tablist" aria-orientation="vertical"></div>
             </div>
         </div>
-        <div class="col-9" id="instructionsContent"></div>
+        <div class="col-9">
+            <div class="row" id="instructionsContent"></div>
+        </div>
     </div>
 {% endblock %}
 {% block static_js %}
     <script src="{% static 'instructions/js/instructions_api.js' %}"></script>
+    <script src="{% static 'instructions/js/instructions_utils.js' %}"></script>
     <script src="{% static 'instructions/js/instructions.js' %}"></script>
 {% endblock %}

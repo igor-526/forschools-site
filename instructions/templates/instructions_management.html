@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-xxl mt-4 mb-3">
+        <div class="row justify-content-between">
+            <div class="col-auto">
+                <h1>Менеджер инструкций</h1>
+            </div>
+            <div class="col-auto">
+                <button id="instructionsManagementFilterEraseAll" type="button" class="btn btn-danger mt-1"><i class="bi bi-funnel"> </i>Сбросить фильтры</button>
+                <a href="{% url 'instructions_new' %}"><button type="button" class="btn btn-primary mt-1"><i class="bi bi-plus"> </i>Новая инструкция</button></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <b>Наименование</b></button>
+                        <ul class="dropdown-menu" style="min-width: 320px;">
+                            <li class="input-group px-1 mb-1">
+                                <input id="instructionsManagementFilterNameField" type="text" class="form-control form-control-sm" aria-label="" placeholder="Поиск:">
+                                <button id="instructionsManagementFilterNameFieldErase" type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <b>Загружена</b></button>
+                        <ul class="dropdown-menu" style="min-width: 320px;">
+                            <li class="input-group px-1 mb-1">
+                                <span class="input-group-text">Начало</span>
+                                <input id="instructionsManagementFilterUploadedStartField" type="date" class="form-control form-control-sm" aria-label="">
+                                <button id="instructionsManagementFilterUploadedStartFieldErase" type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser"></i></button>
+                            </li>
+                            <li class="input-group px-1">
+                                <span class="input-group-text">Конец</span>
+                                <input id="instructionsManagementFilterUploadedEndField" type="date" class="form-control form-control-sm" aria-label="">
+                                <button id="instructionsManagementFilterUploadedEndFieldErase" type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <b>Изменена</b></button>
+                        <ul class="dropdown-menu" style="min-width: 320px;">
+                            <li class="input-group px-1 mb-1">
+                                <span class="input-group-text">Начало</span>
+                                <input id="instructionsManagementFilterChangedStartField" type="date" class="form-control form-control-sm" aria-label="">
+                                <button id="instructionsManagementFilterChangedStartFieldErase" type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser"></i></button>
+                            </li>
+                            <li class="input-group px-1">
+                                <span class="input-group-text">Конец</span>
+                                <input id="instructionsManagementFilterChangedEndField" type="date" class="form-control form-control-sm" aria-label="">
+                                <button id="instructionsManagementFilterChangedEndFieldErase" type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <b>Видимость</b></button>
+                        <ul id="instructionsManagementFilterVisibleList" class="dropdown-menu" style="min-width: 250px;"> </ul>
+                    </div>
+                </th>
+                <th scope="col">Действие</th>
+            </tr>
+            </thead>
+            <tbody id="instructionsManagementTableBody"></tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block static_js %}
+    <script src="{% static 'instructions/js/instructions_api.js' %}"></script>
+    <script src="{% static 'instructions/js/instructions_management.js' %}"></script>
+{% endblock %}

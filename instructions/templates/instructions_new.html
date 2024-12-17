@@ -26,9 +26,39 @@
             <div class="invalid-feedback" id="instructionsNewFormInstructionError"></div>
         </div>
     </form>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            Файлы
+        </div>
+        <div class="card-body">
+            <div class="row" id="instructionsNewFormInstructionFilesCard">
+                <div class="col-2 mb-1" id="instructionsNewFormInstructionFilesCardNewCol">
+                    <div class="card" id="instructionsNewFormInstructionFilesCardNew">
+                        <img src="{% static 'instructions/img/plus.svg' %}" class="card-img-top" alt="Добавление">
+                        <div class="card-body">
+                            <p class="card-text">Нажмите, чтобы добавить</p>
+                            <form id="instructionsFilesNewForm">
+                                <input name="file" id="instructionsNewFormInstructionFilesCardNewInput" type="file" class="form-control d-none" aria-label="" multiple>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
     <button id="instructionsNewFormInstructionSaveButton" class="btn-primary btn mb-3">Сохранить</button>
 {% endblock %}
 {% block static_js %}
+    <script>
+        let instructionID = {% if pk %}{{ pk }}{% else %}null{% endif %}
+    </script>
     <script src="{% static 'instructions/js/instructions_api.js' %}"></script>
     <script src="{% static 'instructions/js/instructions_new.js' %}"></script>
 {% endblock %}

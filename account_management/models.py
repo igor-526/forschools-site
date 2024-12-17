@@ -14,3 +14,7 @@ class Account(AbstractUser):
     INN = models.IntegerField(verbose_name="ИНН",
                               null=True,
                               blank=True)
+    instructions_moderator = models.BooleanField(verbose_name="Модератор инструкций",
+                                                 null=False,
+                                                 blank=True,
+                                                 default=False)
