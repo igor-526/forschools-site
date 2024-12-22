@@ -1,5 +1,6 @@
 function instructionsNewMain(){
     instructionsNewFormInstructionSaveButton.addEventListener("click", instructionsNewSave)
+
     if (instructionID){
         instructionsNewSetInstruction()
     }
@@ -10,41 +11,111 @@ function instructionsNewMain(){
     instructionsNewFormInstructionFilesCardNewInput.addEventListener("input", instructionsNewAddFiles)
 }
 
-function instructionsNewSetInstruction(){
-    instructionsAPIGetItem(instructionID).then(request => {
-        switch (request.status){
-            case 200:
-                console.log(request.response)
-                instructionsNewFormNameField.value = request.response.name
-                instructionsNewFormInstructionField.value = request.response.instruction
-                request.response.visibility.forEach(role => {
-                    switch (role){
-                        case 'listeners':
-                            instructionsNewFormInstructionCheckboxListeners.checked = true
-                            break
-                        case 'teachers':
-                            instructionsNewFormInstructionCheckboxTeachers.checked = true
-                            break
-                        case 'curators':
-                            instructionsNewFormInstructionCheckboxCurators.checked = true
-                            break
-                        case 'methodists':
-                            instructionsNewFormInstructionCheckboxMethodists.checked = true
-                            break
-                        case 'administrators':
-                            instructionsNewFormInstructionCheckboxAdministrators.checked = true
-                            break
-                    }
-                })
-                break
-            default:
-                break
-        }
+function instructionsNewSetInstruction(setData=true){
+    if (setData){
+        instructionsAPIGetItem(instructionID).then(request => {
+            switch (request.status){
+                case 200:
+                    console.log(request.response)
+                    instructionsNewFormNameField.value = request.response.name
+                    instructionsNewFormInstructionField.value = request.response.instruction
+                    request.response.visibility.forEach(role => {
+                        switch (role){
+                            case 'listeners':
+                                instructionsNewFormInstructionCheckboxListeners.checked = true
+                                break
+                            case 'teachers':
+                                instructionsNewFormInstructionCheckboxTeachers.checked = true
+                                break
+                            case 'curators':
+                                instructionsNewFormInstructionCheckboxCurators.checked = true
+                                break
+                            case 'methodists':
+                                instructionsNewFormInstructionCheckboxMethodists.checked = true
+                                break
+                            case 'administrators':
+                                instructionsNewFormInstructionCheckboxAdministrators.checked = true
+                                break
+                        }
+                    })
+                    break
+                default:
+                    break
+            }
+        })
+    }
+    instructionsNewFormInstructionDeleteButton.classList.remove("d-none")
+    instructionsNewFormInstructionDeleteButton.addEventListener("click", function () {
+        bsInstructionsNewDeleteConfModal.show()
     })
+    instructionsNewDeleteConfModalDeleteButton.addEventListener("click", instructionsNewDelete)
 }
 
-function instructionsNewValidate(){
-    return true
+function instructionsNewValidate(errors = null){
+    function resetValidation(){
+        instructionsNewFormNameField.classList.remove("is-invalid")
+        instructionsNewFormInstructionField.classList.remove("is-invalid")
+        instructionsNewFormNameError.innerHTML = ""
+        instructionsNewFormInstructionError.innerHTML = ""
+    }
+
+    function setInvalid(element=null, errorElement=null, error=null){
+        if (element){
+            element.classList.add("is-invalid")
+        }
+        if (error && errorElement){
+            errorElement.innerHTML = error
+        }
+        validationStatus = false
+    }
+
+    function validateName(error=null){
+        if (error){
+            setInvalid(instructionsNewFormNameField, instructionsNewFormNameError, error)
+        } else {
+            if (instructionsNewFormNameField.value.trim() === ""){
+                setInvalid(instructionsNewFormNameField, instructionsNewFormNameError,
+                    "Поле не может быть пустым")
+            } else {
+                if (instructionsNewFormNameField.value.trim().length > 250){
+                    setInvalid(instructionsNewFormNameField, instructionsNewFormNameError,
+                        "Поле не может превышать 250 символов")
+                }
+            }
+        }
+    }
+
+    function validateInstruction(error=null){
+        if (error){
+            setInvalid(instructionsNewFormInstructionField, instructionsNewFormInstructionError, error)
+        } else {
+            if (instructionsNewFormInstructionField.value.trim() === ""){
+                setInvalid(instructionsNewFormInstructionField, instructionsNewFormInstructionError,
+                    "Поле не может быть пустым")
+            } else {
+                if (instructionsNewFormInstructionField.value.trim().length > 5000){
+                    setInvalid(instructionsNewFormInstructionField, instructionsNewFormInstructionError,
+                        "Поле не может превышать 5000 символов")
+                }
+            }
+        }
+    }
+
+    resetValidation()
+    let validationStatus = true
+    if (errors){
+        if (errors.hasOwnProperty("name")){
+            validateName(errors.name)
+        }
+        if (errors.hasOwnProperty("instruction")){
+            validateInstruction(errors.instruction)
+        }
+    } else {
+        validateName()
+        validateInstruction()
+    }
+
+    return validationStatus
 }
 
 function instructionsNewSave(){
@@ -57,10 +128,10 @@ function instructionsNewSave(){
             instructionsAPIUpdate(instructionID, getFormData()).then(request => {
                 switch (request.status){
                     case 200:
-                        console.log(request.response)
+                        alert("Инструкция успешно изменена")
                         break
                     default:
-                        console.log(request.status)
+                        alert(request.response)
                         break
                 }
             })
@@ -68,15 +139,28 @@ function instructionsNewSave(){
             instructionsAPICreate(getFormData()).then(request => {
                 switch (request.status){
                     case 201:
-                        console.log(request.response)
+                        location.assign("/instructions/management/")
                         break
                     default:
-                        console.log(request.status)
+                        alert(request.response)
                         break
                 }
             })
         }
     }
+}
+
+function instructionsNewDelete(){
+    instructionsAPIDestroy(instructionID).then(request => {
+        switch (request.status){
+            case 204:
+                location.assign("/instructions/management/")
+                break
+            default:
+                alert(request.response)
+                break
+        }
+    })
 }
 
 function instructionsNewFilesGetAll(){
@@ -93,7 +177,7 @@ function instructionsNewFilesGetAll(){
 
 function instructionsNewFilesShow(files=[]){
     function getAddListener(fileID){
-instructionsNewFormInstructionField.value += `\n[file:${fileID}]\n`
+        instructionsNewFormInstructionField.value += `\n[file:${fileID}]\n`
     }
 
     function getImgListener(fileID){
@@ -157,11 +241,16 @@ const instructionsNewFormInstructionCheckboxAdministrators = instructionsNewForm
 const instructionsNewFormInstructionField = instructionsNewForm.querySelector("#instructionsNewFormInstructionField")
 const instructionsNewFormInstructionError = instructionsNewForm.querySelector("#instructionsNewFormInstructionError")
 const instructionsNewFormInstructionSaveButton = document.querySelector("#instructionsNewFormInstructionSaveButton")
+const instructionsNewFormInstructionDeleteButton = document.querySelector("#instructionsNewFormInstructionDeleteButton")
 
 const instructionsFilesNewForm = document.querySelector("#instructionsFilesNewForm")
 const instructionsNewFormInstructionFilesCard = document.querySelector("#instructionsNewFormInstructionFilesCard")
 const instructionsNewFormInstructionFilesCardNew = document.querySelector("#instructionsNewFormInstructionFilesCardNew")
 const instructionsNewFormInstructionFilesCardNewInput = instructionsFilesNewForm.querySelector("#instructionsNewFormInstructionFilesCardNewInput")
 const instructionsNewFormInstructionFilesCardNewCol = document.querySelector("#instructionsNewFormInstructionFilesCardNewCol")
+
+const instructionsNewDeleteConfModal = document.querySelector("#instructionsNewDeleteConfModal")
+const bsInstructionsNewDeleteConfModal = new bootstrap.Modal(instructionsNewDeleteConfModal)
+const instructionsNewDeleteConfModalDeleteButton = instructionsNewDeleteConfModal.querySelector("#instructionsNewDeleteConfModalDeleteButton")
 
 instructionsNewMain()

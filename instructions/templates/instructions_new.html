@@ -45,15 +45,11 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
         </div>
     </div>
-
-    <button id="instructionsNewFormInstructionSaveButton" class="btn-primary btn mb-3">Сохранить</button>
+    <button id="instructionsNewFormInstructionDeleteButton" class="btn-danger btn mb-3 mx-1 d-none">Удалить</button>
+    <button id="instructionsNewFormInstructionSaveButton" class="btn-primary btn mb-3 mx-1">Сохранить</button>
+    {% include 'instruction_delete_modal.html' %}
 {% endblock %}
 {% block static_js %}
     <script>

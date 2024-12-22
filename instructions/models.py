@@ -38,7 +38,8 @@ class InstructionFiles(models.Model):
 class Instruction(models.Model):
     name = models.CharField(verbose_name='Наименование',
                             null=False,
-                            blank=False)
+                            blank=False,
+                            max_length=250)
     instruction = models.TextField(verbose_name='Инструкция',
                                    null=False,
                                    blank=False)
