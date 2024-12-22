@@ -6,7 +6,6 @@ function instructionsUtilsGetHTML(dirtyText=""){
                 pHTML += `<p>${text.trim()}</p>`
             }
         })
-        console.log(pHTML)
         return pHTML
     }
 

@@ -44,7 +44,9 @@ class InstructionsListAdminSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request = self.context.get('request')
-        instance = Instruction(**get_instructions_instance_data(request))
+        inst_data = get_instructions_instance_data(request)
+        instance = Instruction(**inst_data)
+        instance.files.set(get_instructions_files(inst_data['instruction']))
         instance.save()
         return instance
 

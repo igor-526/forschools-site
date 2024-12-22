@@ -24,15 +24,17 @@
         {% endif %}
     </ul>
     <div class="row">
-        <div class="col-3">
+        <div class="col-12 col-sm-3">
             <div class="d-flex align-items-start">
                 <div id="instructionsQuestions" class="nav flex-column nav-pills me-3" role="tablist" aria-orientation="vertical"></div>
             </div>
         </div>
-        <div class="col-9">
+        <div class="col-sm-9 d-none d-sm-block">
+            <h2 id="instructionsTitle"></h2>
             <div class="row" id="instructionsContent"></div>
         </div>
     </div>
+    {% include 'instruction_mobile_modal.html' %}
 {% endblock %}
 {% block static_js %}
     <script src="{% static 'instructions/js/instructions_api.js' %}"></script>

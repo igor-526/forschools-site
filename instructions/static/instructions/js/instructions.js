@@ -47,9 +47,9 @@ function instructionsRoleTabListeners(){
 }
 
 function instructionsShow(instructions){
-    function replaceFiles(files){
+    function replaceFiles(files, element){
         files.forEach(file => {
-            instructionsContent.innerHTML = instructionsContent.innerHTML.replace(`[file:${file.id}]`,
+            element.innerHTML = element.innerHTML.replace(`[file:${file.id}]`,
                 `<img src="${file.file}" alt="${file.alt}" class="mx-1" style="width: 18rem;">`)
         })
     }
@@ -58,13 +58,21 @@ function instructionsShow(instructions){
         instructionsAPIGetItem(insID).then(request => {
             switch (request.status){
                 case 200:
-                    console.log(request.response)
                     instructionsQuestions.querySelectorAll(".nav-link").forEach(elem => {
                         elem.classList.remove("active")
                     })
-                    button.classList.add("active")
-                    instructionsContent.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
-                    replaceFiles(request.response.files)
+                    if (screen.width >= 576){
+                        button.classList.add("active")
+                        instructionsContent.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
+                        instructionsTitle.innerHTML = request.response.name
+                        replaceFiles(request.response.files, instructionsContent)
+                    } else {
+                        instructionsModalMobileTitle.innerHTML = request.response.name
+                        instructionsModalMobileBody.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
+                        bsInstructionsModalMobile.show()
+                        replaceFiles(request.response.files, instructionsModalMobileBody)
+
+                    }
                     break
                 default:
                     break
@@ -110,5 +118,11 @@ const instructionsTabMethodists = document.querySelector("#instructionsTabMethod
 const instructionsTabAdministrators = document.querySelector("#instructionsTabAdministrators")
 const instructionsQuestions = document.querySelector("#instructionsQuestions")
 const instructionsContent = document.querySelector("#instructionsContent")
+const instructionsTitle = document.querySelector("#instructionsTitle")
+
+const instructionsModalMobile = document.querySelector("#instructionsModalMobile")
+const bsInstructionsModalMobile = new bootstrap.Modal(instructionsModalMobile)
+const instructionsModalMobileTitle = instructionsModalMobile.querySelector("#instructionsModalMobileTitle")
+const instructionsModalMobileBody = instructionsModalMobile.querySelector("#instructionsModalMobileBody")
 
 instructionsMain()
