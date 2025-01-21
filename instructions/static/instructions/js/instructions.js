@@ -1,52 +1,91 @@
 function instructionsMain(){
+    const hashValRole = hashUtilsGetHashValue("role")
+    const hashValInstrID = hashUtilsGetHashValue("instrID")
+    instructionsSelectedRole = hashValRole ? hashValRole : "listeners"
+    instructionsSelectedID = hashValInstrID
     instructionsRoleTabListeners()
     instructionsGetQuestions()
+    if (instructionsSelectedID){
+        instructionsShowItem(null)
+    }
 }
 
 function instructionsRoleTabListeners(){
-    instructionsTabListeners.addEventListener("click", function (){
+    function setListeners(){
         instructionsTabListeners.classList.add("active")
         instructionsTabTeachers.classList.remove("active")
         instructionsTabCurators.classList.remove("active")
         instructionsTabMethodists.classList.remove("active")
         instructionsTabAdministrators.classList.remove("active")
-        instructionsGetQuestions("listeners")
-    })
-    instructionsTabTeachers.addEventListener("click", function (){
+        instructionsSelectedRole = "listeners"
+        instructionsGetQuestions()
+    }
+
+    function setTeachers(){
         instructionsTabTeachers.classList.add("active")
         instructionsTabListeners.classList.remove("active")
         instructionsTabCurators.classList.remove("active")
         instructionsTabMethodists.classList.remove("active")
         instructionsTabAdministrators.classList.remove("active")
-        instructionsGetQuestions("teachers")
-    })
-    instructionsTabCurators.addEventListener("click", function (){
+        instructionsSelectedRole = "teachers"
+        instructionsGetQuestions()
+    }
+
+    function setCurators(){
         instructionsTabTeachers.classList.remove("active")
         instructionsTabListeners.classList.remove("active")
         instructionsTabCurators.classList.add("active")
         instructionsTabMethodists.classList.remove("active")
         instructionsTabAdministrators.classList.remove("active")
-        instructionsGetQuestions("curators")
-    })
-    instructionsTabMethodists.addEventListener("click", function (){
+        instructionsSelectedRole = "curators"
+        instructionsGetQuestions()
+    }
+
+    function setMethodists(){
         instructionsTabTeachers.classList.remove("active")
         instructionsTabListeners.classList.remove("active")
         instructionsTabCurators.classList.remove("active")
         instructionsTabMethodists.classList.add("active")
         instructionsTabAdministrators.classList.remove("active")
-        instructionsGetQuestions("methodists")
-    })
-    instructionsTabAdministrators.addEventListener("click", function (){
+        instructionsSelectedRole = "methodists"
+        instructionsGetQuestions()
+    }
+
+    function setAdmins(){
         instructionsTabTeachers.classList.remove("active")
         instructionsTabListeners.classList.remove("active")
         instructionsTabCurators.classList.remove("active")
         instructionsTabMethodists.classList.remove("active")
         instructionsTabAdministrators.classList.add("active")
-        instructionsGetQuestions("administrators")
-    })
+        instructionsSelectedRole = "administrators"
+        instructionsGetQuestions()
+    }
+    instructionsTabListeners.addEventListener("click", setListeners)
+    instructionsTabTeachers.addEventListener("click", setTeachers)
+    instructionsTabCurators.addEventListener("click", setCurators)
+    instructionsTabMethodists.addEventListener("click", setMethodists)
+    instructionsTabAdministrators.addEventListener("click", setAdmins)
+
+    switch (instructionsSelectedRole){
+        case "listeners":
+            setListeners()
+            break
+        case "teachers":
+            setTeachers()
+            break
+        case "curators":
+            setCurators()
+            break
+        case "methodists":
+            setMethodists()
+            break
+        case "admins":
+            setAdmins()
+            break
+    }
 }
 
-function instructionsShow(instructions){
+function instructionsShowItem(button){
     function replaceFiles(files, element){
         files.forEach(file => {
             element.innerHTML = element.innerHTML.replace(`[file:${file.id}]`,
@@ -54,32 +93,38 @@ function instructionsShow(instructions){
         })
     }
 
-    function getListener(insID, button){
-        instructionsAPIGetItem(insID).then(request => {
-            switch (request.status){
-                case 200:
+    instructionsAPIGetItem(instructionsSelectedID).then(request => {
+        switch (request.status){
+            case 200:
+                hashUtilsSetURL({
+                    role: instructionsSelectedRole,
+                    instrID: instructionsSelectedID
+                })
+                if (button){
                     instructionsQuestions.querySelectorAll(".nav-link").forEach(elem => {
                         elem.classList.remove("active")
                     })
-                    if (screen.width >= 576){
-                        button.classList.add("active")
-                        instructionsContent.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
-                        instructionsTitle.innerHTML = request.response.name
-                        replaceFiles(request.response.files, instructionsContent)
-                    } else {
-                        instructionsModalMobileTitle.innerHTML = request.response.name
-                        instructionsModalMobileBody.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
-                        bsInstructionsModalMobile.show()
-                        replaceFiles(request.response.files, instructionsModalMobileBody)
+                }
+                if (screen.width >= 576){
+                    button?.classList.add("active")
+                    instructionsContent.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
+                    instructionsTitle.innerHTML = request.response.name
+                    replaceFiles(request.response.files, instructionsContent)
+                } else {
+                    instructionsModalMobileTitle.innerHTML = request.response.name
+                    instructionsModalMobileBody.innerHTML = instructionsUtilsGetHTML(request.response.instruction)
+                    bsInstructionsModalMobile.show()
+                    replaceFiles(request.response.files, instructionsModalMobileBody)
 
-                    }
-                    break
-                default:
-                    break
-            }
-        })
-    }
+                }
+                break
+            default:
+                break
+        }
+    })
+}
 
+function instructionsShow(instructions){
     function getElement(ins){
         const button = document.createElement("button")
         button.type = "button"
@@ -87,7 +132,8 @@ function instructionsShow(instructions){
         button.classList.add("nav-link")
         button.innerHTML = ins.name
         button.addEventListener("click", function () {
-            getListener(ins.id, button)
+            instructionsSelectedID = ins.id
+            instructionsShowItem(button)
         })
         return button
     }
@@ -98,10 +144,14 @@ function instructionsShow(instructions){
     })
 }
 
-function instructionsGetQuestions(role="listeners"){
+function instructionsGetQuestions(role= instructionsSelectedRole){
     instructionsAPIGetAll([role]).then(request => {
         switch (request.status){
             case 200:
+                hashUtilsSetURL({
+                    role: instructionsSelectedRole,
+                    instrID: instructionsSelectedID
+                })
                 instructionsShow(request.response)
                 break
             default:
@@ -110,6 +160,9 @@ function instructionsGetQuestions(role="listeners"){
     })
 }
 
+
+let instructionsSelectedRole = "listeners"
+let instructionsSelectedID = null
 
 const instructionsTabListeners = document.querySelector("#instructionsTabListeners")
 const instructionsTabTeachers = document.querySelector("#instructionsTabTeachers")
