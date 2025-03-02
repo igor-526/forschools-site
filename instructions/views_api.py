@@ -1,11 +1,15 @@
 from django.utils import timezone
 from django.db.models import Q
+from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Instruction, InstructionFiles
 from .serializers import (InstructionFilesListSerializer, InstructionFilesAdminSerializer,
                           InstructionsListSerializer, InstructionsListAdminSerializer,
                           InstructionsSerializer, InstructionsAdminSerializer,
-                          InstructionFilesIMGOnlySerializer)
+                          InstructionFilesItemSerializer)
 
 
 class InstructionListCreateAPIView(ListCreateAPIView):
@@ -77,6 +81,65 @@ class InstructionListCreateAPIView(ListCreateAPIView):
         return InstructionsListSerializer
 
 
+class InstructionListReplaceAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        print(kwargs)
+        try:
+            instruction = Instruction.objects.get(pk=kwargs.get('pk'))
+        except Instruction.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if kwargs.get('role') == "teachers":
+            visible_settings = instruction.visible_teachers
+            replace_instruction_key = "visible_teachers__ordering"
+        elif kwargs.get('role') == "curators":
+            visible_settings = instruction.visible_curators
+            replace_instruction_key = "visible_curators__ordering"
+        elif kwargs.get('role') == "methodists":
+            visible_settings = instruction.visible_methodists
+            replace_instruction_key = "visible_methodists__ordering"
+        elif kwargs.get('role') == "administrators":
+            visible_settings = instruction.visible_administrators
+            replace_instruction_key = "visible_administrators__ordering"
+        elif kwargs.get('role') == "listeners":
+            visible_settings = instruction.visible_listeners
+            replace_instruction_key = "visible_listeners__ordering"
+        else:
+            visible_settings = None
+            replace_instruction_key = None
+        if visible_settings is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        current_ordering = visible_settings.get("ordering")
+        if current_ordering == 1:
+            return Response(status=status.HTTP_200_OK)
+        if kwargs.get('direction') == "up":
+            new_ordering = current_ordering - 1
+        elif kwargs.get('direction') == "down":
+            new_ordering = current_ordering + 1
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        replace_instruction = Instruction.objects.filter(**{replace_instruction_key: new_ordering}).first()
+        if replace_instruction is None:
+            return Response(status=status.HTTP_200_OK)
+        if kwargs.get('role') == "teachers":
+            instruction.visible_teachers['ordering'] = new_ordering
+            replace_instruction.visible_teachers['ordering'] = current_ordering
+        elif kwargs.get('role') == "curators":
+            instruction.visible_curators['ordering'] = new_ordering
+            replace_instruction.visible_curators['ordering'] = current_ordering
+        elif kwargs.get('role') == "methodists":
+            instruction.visible_methodists['ordering'] = new_ordering
+            replace_instruction.visible_methodists['ordering'] = current_ordering
+        elif kwargs.get('role') == "administrators":
+            instruction.visible_administrators['ordering'] = new_ordering
+            replace_instruction.visible_administrators['ordering'] = current_ordering
+        elif kwargs.get('role') == "listeners":
+            instruction.visible_listeners['ordering'] = new_ordering
+            replace_instruction.visible_listeners['ordering'] = current_ordering
+        instruction.save()
+        replace_instruction.save()
+        return Response({}, status=status.HTTP_200_OK)
+
+
 class InstructionDetailAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Instruction.objects.all()
@@ -102,5 +165,5 @@ class InstructionFilesDetailAPIView(RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         if self.request.query_params.get("imgonly"):
-            return InstructionFilesIMGOnlySerializer
+            return InstructionFilesItemSerializer
         return InstructionFilesAdminSerializer

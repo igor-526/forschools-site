@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block static_css %}
+<link rel="stylesheet" href="{% static 'instructions/css/instructions_new.css' %}">
+{% endblock %}
 {% block content %}
     <form id="instructionsNewForm">
         <div class="mb-3">
@@ -50,6 +53,7 @@
     <button id="instructionsNewFormInstructionDeleteButton" class="btn-danger btn mb-3 mx-1 d-none">Удалить</button>
     <button id="instructionsNewFormInstructionSaveButton" class="btn-primary btn mb-3 mx-1">Сохранить</button>
     {% include 'instruction_delete_modal.html' %}
+    {% include 'instruction_new_img_modal.html' %}
 {% endblock %}
 {% block static_js %}
     <script>
@@ -57,4 +61,5 @@
     </script>
     <script src="{% static 'instructions/js/instructions_api.js' %}"></script>
     <script src="{% static 'instructions/js/instructions_new.js' %}"></script>
+    <script src="{% static 'instructions/js/instructions_new_img_modal.js' %}"></script>
 {% endblock %}

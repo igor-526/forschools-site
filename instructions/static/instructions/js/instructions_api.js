@@ -113,6 +113,29 @@ async function instructionsAPIUpdate(instructionID, fd){
     }
 }
 
+async function instructionsAPIReplace(instructionID, role, direction){
+    let statusCode = null
+    try {
+        const request = await fetch(`/api/instructions/${instructionID}/replace-${role}/${direction}/`, {
+        method: "POST",
+        credentials: 'same-origin',
+        headers:{
+            "X-CSRFToken": csrftoken,
+        },
+    })
+        statusCode = request.status
+        return {
+            status: statusCode,
+            response: await request.json()
+        }
+    } catch (err) {
+        console.log(err)
+        return {
+            status: statusCode
+        }
+    }
+}
+
 async function instructionsAPIDestroy(instructionID){
     let statusCode = null
     try {

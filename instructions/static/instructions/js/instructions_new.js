@@ -16,7 +16,6 @@ function instructionsNewSetInstruction(setData=true){
         instructionsAPIGetItem(instructionID).then(request => {
             switch (request.status){
                 case 200:
-                    console.log(request.response)
                     instructionsNewFormNameField.value = request.response.name
                     instructionsNewFormInstructionField.value = request.response.instruction
                     request.response.visibility.forEach(role => {
@@ -129,6 +128,7 @@ function instructionsNewSave(){
                 switch (request.status){
                     case 200:
                         alert("Инструкция успешно изменена")
+                        location.assign("/instructions/management/")
                         break
                     default:
                         alert(request.response)
@@ -139,6 +139,7 @@ function instructionsNewSave(){
             instructionsAPICreate(getFormData()).then(request => {
                 switch (request.status){
                     case 201:
+                        alert("Инструкция успешно сохранена")
                         location.assign("/instructions/management/")
                         break
                     default:
@@ -180,8 +181,8 @@ function instructionsNewFilesShow(files=[]){
         instructionsNewFormInstructionField.value += `\n[file:${fileID}]\n`
     }
 
-    function getImgListener(fileID){
-
+    function getImgListener(src){
+        instructionNewImgModalSet(src)
     }
 
     function getElement(file){
@@ -190,14 +191,25 @@ function instructionsNewFilesShow(files=[]){
         const card = document.createElement("div")
         card.classList.add("card")
         col.insertAdjacentElement("beforeend", card)
-        const img = document.createElement("img")
-        img.src = file.file
-        img.classList.add("card-img-top")
-        img.alt = file.alt
-        img.addEventListener("click", function () {
-            getImgListener(file.id)
-        })
-        card.insertAdjacentElement("beforeend", img)
+        switch (file.file_type){
+            case "image":
+                const img = document.createElement("img")
+                img.src = file.file
+                img.classList.add("card-img-top", "cursor-zoom")
+                img.alt = file.alt
+                img.addEventListener("click", function () {
+                    getImgListener(file.file)
+                })
+                card.insertAdjacentElement("beforeend", img)
+                break
+            case "video":
+                const video = document.createElement("video")
+                video.src = file.file
+                video.classList.add("card-img-top")
+                video.controls = true
+                card.insertAdjacentElement("beforeend", video)
+                break
+        }
         const cardBody = document.createElement("div")
         const cardBodyA = document.createElement("a")
         card.classList.add("card-body")

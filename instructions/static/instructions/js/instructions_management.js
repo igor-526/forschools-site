@@ -42,6 +42,20 @@ function instructionsManagementShow(instructions){
         return visibilityRU.join("<br>")
     }
 
+    function getReplaceListener(insID, direction){
+        instructionsAPIReplace(insID, instructionsManagementFilterRoles[0], direction).then(request => {
+            switch (request.status){
+                case 200:
+                    alert("Инструкция успешно перемещена")
+                    instructionsManagementGet()
+                    break
+                default:
+                    alert("Произошла ошибка. Не удалось переместить инструкцию")
+                    break
+            }
+        })
+    }
+
     function getElement(ins){
         const tr = document.createElement("tr")
         const tdName = document.createElement("td")
@@ -51,6 +65,38 @@ function instructionsManagementShow(instructions){
         const tdActions = document.createElement("td")
 
         tdName.innerHTML = ins.name
+
+        if (instructionsManagementFilterRoles.length === 1 &&
+            instructionsManagementFilterName === null &&
+            instructionsManagementFilterUploadedStart === null &&
+            instructionsManagementFilterUploadedEnd === null &&
+            instructionsManagementFilterChangedStart === null &&
+            instructionsManagementFilterChangedEnd === null
+        ) {
+            tdName.classList.add("d-flex")
+            const replaceButtonsBlock = document.createElement("div")
+            const replaceButtonUPBlock = document.createElement("div")
+            const replaceButtonDOWNBlock = document.createElement("div")
+            const replaceButtonUP = document.createElement("button")
+            const replaceButtonDOWN = document.createElement("button")
+            replaceButtonsBlock.classList.add("me-3")
+            replaceButtonUP.classList.add("btn", "btn-sm", "btn-primary", "my-1")
+            replaceButtonUP.innerHTML = '<i class="bi bi-chevron-up"></i>'
+            replaceButtonDOWN.classList.add("btn", "btn-sm", "btn-primary", "my-1")
+            replaceButtonDOWN.innerHTML = '<i class="bi bi-chevron-down"></i>'
+            replaceButtonUP.addEventListener("click", function (){
+                getReplaceListener(ins.id, "up")
+            })
+            replaceButtonDOWN.addEventListener("click", function (){
+                getReplaceListener(ins.id, "down")
+            })
+            replaceButtonsBlock.insertAdjacentElement("beforeend", replaceButtonUPBlock)
+            replaceButtonsBlock.insertAdjacentElement("beforeend", replaceButtonDOWNBlock)
+            replaceButtonUPBlock.insertAdjacentElement("beforeend", replaceButtonUP)
+            replaceButtonDOWNBlock.insertAdjacentElement("beforeend", replaceButtonDOWN)
+            tdName.insertAdjacentElement("afterbegin", replaceButtonsBlock)
+        }
+
         tdUploaded.innerHTML = timeutilsDateTimeToStr(ins.uploaded_at)
         tdChanged.innerHTML = timeutilsDateTimeToStr(ins.changed_at)
         tdVisibility.innerHTML = getVisibilityHTML(ins.visibility)

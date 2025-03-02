@@ -101,6 +101,12 @@ USE_I18N = True
 
 USE_TZ = True
 
+FILE_FORMATS = {
+    'image': ['bmp', 'jpg', 'jpeg', 'png', 'heic', 'HEIC', 'gif'],
+    'video': ['webm', 'mp4'],
+    'audio': ['mp3', 'm4a', 'oga', 'ogg'],
+}
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static_utils")

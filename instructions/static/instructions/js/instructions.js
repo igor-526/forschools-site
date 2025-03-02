@@ -87,9 +87,17 @@ function instructionsRoleTabListeners(){
 
 function instructionsShowItem(button){
     function replaceFiles(files, element){
+        let inner = ""
         files.forEach(file => {
-            element.innerHTML = element.innerHTML.replace(`[file:${file.id}]`,
-                `<img src="${file.file}" alt="${file.alt}" class="mx-1" style="width: 18rem;">`)
+            switch (file.file_type){
+                case "image":
+                    inner = `<img src="${file.file}" alt="${file.alt}" class="mx-1" style="width: 18rem;">`
+                    break
+                case "video":
+                    inner = `<video src="${file.file}" class="mx-1" style="width: 18rem;" controls>`
+                    break
+            }
+            element.innerHTML = element.innerHTML.replace(`[file:${file.id}]`, inner)
         })
     }
 
